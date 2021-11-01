@@ -3,13 +3,13 @@ const express = require("express");
 const cors = require("cors");
 const { ObjectId, MongoClient } = require("mongodb");
 const app = express();
-const port = 5000;
+const port =  process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-const uri = `mongodb+srv://mytravel:3oUVgiJzQ8SoCW4X@cluster0.nfwxj.mongodb.net/happinesstours?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.nfwxj.mongodb.net/happinesstours?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -35,6 +35,12 @@ client.connect(err => {
     app.post("/booking",async (req, res) => {
         const result = await travelers.insertOne(req.body);
         // console.log(result);
+    });
+    app.post("/addTravel",async (req, res) => {
+        console.log('recieved a request')
+        const result = await destinations.insertOne(req.body);
+        res.send(result);
+        console.log(result);
     });
     app.get('/travelers',async(req, res)=>{
         const cursor  = travelers.find({})
@@ -63,7 +69,7 @@ client.connect(err => {
         res.json(results);
     });
     // update Api
-    app.put()
+
     
     app.delete('/mybookings/:id', async(req, res)=>{
         console.log(req.params.id);
